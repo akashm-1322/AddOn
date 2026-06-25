@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:6
+    restart: unless-stopped
+    volumes:
+      - ./data/mongo:/data/db
+    ports:
+      - '27017:27017'
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+  auth-service:
+    build: .
+    ports:
+      - '4000:4000'
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/authdb
+      - REDIS_URL=redis://redis:6379
+      - JWT_ACCESS_SECRET=change_me
+      - JWT_REFRESH_SECRET=change_me2
+      - GOOGLE_CLIENT_ID=
+    depends_on:
+      - mongo
+      - redis
